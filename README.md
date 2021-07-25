@@ -74,4 +74,6 @@ sudo docker exec -it MYSQL-CONTAINER-ID mysql -u root -p
     ```
    Once the server is start and running, visit [http://localhost:8000](http://localhost:8000)
    
-Currently Debug Mode is True 
+ Thank you
+ 
+ Abhishek kumar

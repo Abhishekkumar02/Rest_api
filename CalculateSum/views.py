@@ -1,8 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework import status
+from django.http import JsonResponse
 from .serializers import CalculateSumSerializer
 from .models import CalculateSum
-from rest_framework.exceptions import NotFound
 import time
 import string
 import random
@@ -11,8 +12,11 @@ import random
 # Simple get api which gives string as response
 @api_view(['GET'])
 def api_overview(request):
-    api_urls = "Hi from test API"
-    return Response(api_urls)
+    data = {
+        "Status_Code": status.HTTP_200_OK,
+        "Response": "Hi from test API"
+    }
+    return JsonResponse(data, safe=False)
 
 
 # Get api which take 2 number from the url and create entry in databases
@@ -32,7 +36,12 @@ def calculate(request, number1, number2):
     if serializer.is_valid():
         serializer.save()
     # return unique identifier as response
-    return Response(serializer.data['uniqueIdentifier'])
+    data = {
+        "Status_Code": status.HTTP_200_OK,
+        "Unique_Identifier": serializer.data['uniqueIdentifier']
+    }
+
+    return JsonResponse(data, safe=False)
 
 
 # get api which takes the unique identifier from the url and calculate the sum of 2 number and update into the DB
@@ -43,7 +52,11 @@ def get_answer(request, unique_identifier):
         db_record = CalculateSum.objects.get(uniqueIdentifier=unique_identifier)
     except:
         # if data not found in db return the error message.
-        raise NotFound("Does not exist in databases")
+        data = {
+            "Status_Code": status.HTTP_404_NOT_FOUND,
+            "Response": "Identifier Does not exist in databases"
+        }
+        return JsonResponse(data, safe=False)
 
     serializer = CalculateSumSerializer(db_record, many=False)
     # sleep for 10 second
@@ -56,9 +69,13 @@ def get_answer(request, unique_identifier):
     if serializer_sum_queue.is_valid():
         serializer_sum_queue.save()
     # return the response
-    res = "Sum of " + str(serializer.data['number1']) + " and " + str(serializer.data['number2']) + " is: " + str(
-        answer)
-    return Response(res)
+    # result = "Sum of " + str(serializer.data['number1']) + " and " + str(serializer.data['number2']) + " is: " + str(
+    #     answer)
+    data = {
+        "Status_Code": status.HTTP_200_OK,
+        "Calculated_Sum": answer
+    }
+    return JsonResponse(data, safe=False)
 
 
 def unique_identifier_generator(size=6, chars=string.ascii_uppercase + string.digits):

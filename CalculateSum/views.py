@@ -54,7 +54,7 @@ def get_answer(request, unique_identifier):
         # if data not found in db return the error message.
         data = {
             "Status_Code": status.HTTP_404_NOT_FOUND,
-            "Response": "Identifier Does not exist in databases"
+            "Response": "Identifier Does not exist in database"
         }
         return JsonResponse(data, safe=False)
 
